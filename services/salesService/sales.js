@@ -19,17 +19,20 @@ const validateProductId = async (array) => {
 };
 
 const validateSale = async (sale) => {
-  let validate = true;
+  let validate = [];
   const products = await getProductsBySale(sale);
   products.forEach((el, i) => {
     const [{ quantity: currentQuantity }] = el;
     const quantity = parseInt(sale[i].quantity, 10);
     const newQuantity = currentQuantity - quantity;
     if (newQuantity <= 0) {
-      validate = false;
+      validate = [...validate, false];
     }
   });
-  if (!validate) return { error: { message: 'Such amount is not permitted to sell' } };
+  const isValidSale = validate.some((el) => !el);
+  if (isValidSale) {
+    return { error: { message: 'Such amount is not permitted to sell' } };
+  }
   return validate;
 };
 

@@ -6,7 +6,7 @@ const REQUIRED_QUANTITY = '"quantity" is required';
 const INVALID_QUANTITY = '"quantity" must be a number larger than or equal to 1';
 const BAD_REQUEST = 400;
 const UNPROCESSABLE_ENTITY = 422;
-const CONFLICT = 409;
+// const CONFLICT = 409;
 const CREATED = 201;
 const OK = 200;
 const NOT_FOUND = 404;
@@ -38,10 +38,10 @@ const create = rescue(async (req, res) => {
     const { error, code } = checQuantityFIeld;
     return res.status(code).json({ message: error });
   }
-  const { error } = salesService.validateProductId(sale);
+  const { error } = await salesService.validateProductId(sale);
   if (error) return res.status(UNPROCESSABLE_ENTITY).json(error.message);
-  const isValidSale = salesService.validateSale(sale);
-  if (isValidSale.error) return res.status(CONFLICT).json(isValidSale.error.message);
+  const isValidSale = await salesService.validateSale(sale);
+  if (isValidSale.error) return res.status(UNPROCESSABLE_ENTITY).json(isValidSale.error);
   const newSaleId = await salesService.createSale(sale);
   return res.status(CREATED).json({ id: newSaleId, itemsSold: sale });
 });
